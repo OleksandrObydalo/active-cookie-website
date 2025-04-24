@@ -1,102 +1,40 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Tracker</title>
-    <meta name="description" content="Demo for cookie scanning tools">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            padding-bottom: 80px;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .results {
-            margin-top: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        .cookie-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Cookie з форми</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Website Cookie Tracker</h1>
-        <div class="input-group">
-            <button onclick="trackOwnCookies()">Show This Site's Cookies</button>
-        </div>
-        <div class="results" id="resultsContainer">
-            <h3>Cookies will appear here</h3>
-        </div>
-    </div>
+  <h2>Введіть своє ім’я:</h2>
+  <input type="text" id="usernameInput" placeholder="Ваше ім’я">
+  <button onclick="saveToCookie()">Зберегти в cookie</button>
+  <button onclick="alert(getCookie('username'))">Показати з cookie</button>
 
-    <script>
-        function trackOwnCookies() {
-            const cookies = document.cookie;
-            const container = document.getElementById('resultsContainer');
+  <script>
+    function saveToCookie() {
+      let name = document.getElementById("usernameInput").value;
+      setCookie("username", name, 7);
+    }
 
-            if (cookies) {
-                const cookieList = cookies.split(';').map(c => {
-                    const [name, value] = c.trim().split('=');
-                    return `<div class="cookie-item"><strong>${name}</strong>: ${value}</div>`;
-                }).join('');
-                container.innerHTML = `<h3>Cookies for this site:</h3>${cookieList}`;
-            } else {
-                container.innerHTML = `<p>No cookies found for this site.</p>`;
-            }
+    function setCookie(name, value, days) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      let expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+      let decodedCookie = decodeURIComponent(document.cookie);
+      let ca = decodedCookie.split(';');
+      name = name + "=";
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(name) === 0) {
+          return c.substring(name.length, c.length);
         }
-
-        function setGACookie() {
-            const gaId = 'GA1.2.' + Math.floor(Math.random() * 1000000000) + '.' + Math.floor(Date.now() / 1000);
-            const expireDays = 730;
-            const d = new Date();
-            d.setTime(d.getTime() + (expireDays * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + d.toUTCString();
-            document.cookie = "_ga=" + gaId + "; " + expires + "; path=/";
-        }
-
-        function setDemoCookie() {
-            const expires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
-            document.cookie = "demo_cookie=auto-set; expires=" + expires + "; path=/";
-        }
-
-        window.onload = function() {
-            setGACookie();
-            setDemoCookie();
-        };
-    </script>
+      }
+      return "Cookie не знайдено";
+    }
+  </script>
 </body>
 </html>
